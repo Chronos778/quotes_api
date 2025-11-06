@@ -1,0 +1,16 @@
+{
+  "name": "quotes-api",
+  "version": "1.0.0",
+  "description": "API for managing inspirational quotes",
+  "main": "quotes-api.js",
+  "scripts": {
+    "start": "node quotes-api.js",
+    "dev": "node quotes-api.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=14.x"
+  }
+}
