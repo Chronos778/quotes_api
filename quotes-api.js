@@ -14,7 +14,7 @@ const authenticate = (req, res, next) => {
   if (!password) {
     return res.status(401).json({ 
       success: false,
-      error: 'Authentication required. Please provide password in x-api-password header.' 
+      error: 'Authentication required. Please provide password in api-password header.' 
     });
   }
   
@@ -2046,7 +2046,7 @@ app.get('/', (req, res) => {
     },
     authentication: {
       note: "POST, PUT, and DELETE operations require authentication",
-      method: "Header: x-api-password: your_password"
+      method: "Header: api-password: your_password"
     },
     totalQuotes: quotes.length
   });
