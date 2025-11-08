@@ -1,46 +1,262 @@
-# Quotes API
+# 📜 Quotes API
 
-A REST API with 2000 inspirational quotes from famous personalities.
+A REST API serving 2000+ inspirational quotes from famous personalities. Built with Express.js and deployed on Vercel.
 
-## Endpoints
+**Live API:** https://quotes-api-ruddy.vercel.app
 
-### Public Endpoints (No Authentication Required)
-- `GET /` - API documentation
-- `GET /quotes` - Get all quotes
-- `GET /quotes/random` - Get a random quote
-- `GET /quotes/:id` - Get a specific quote by ID
+---
 
-### Protected Endpoints (Authentication Required 🔒)
-- `POST /quotes` - Add a new quote
-- `PUT /quotes/:id` - Update a quote
-- `DELETE /quotes/:id` - Delete a quote
+## 🚀 Quick Start
 
-## Authentication
+### Local Development
 
-POST, PUT, and DELETE operations require a password via header:
+1. **Clone and install dependencies:**
+   ```powershell
+   git clone https://github.com/Chronos778/Quotes_api.git
+   cd Quotes_api
+   npm install
+   ```
 
-```bash
-curl -X POST https://your-api.vercel.app/quotes \
+2. **Set up environment variables:**
+   ```powershell
+   cp .env.example .env
+   ```
+   Edit `.env` and set your `API_PASSWORD`
+
+3. **Start the server:**
+   ```powershell
+   npm start
+   ```
+   API runs at `http://localhost:3000`
+
+---
+
+## 📖 API Endpoints
+
+### Public Endpoints (No Auth Required)
+
+#### Get All Quotes
+```powershell
+# PowerShell
+Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes" -Method GET
+
+# curl
+curl https://quotes-api-ruddy.vercel.app/quotes
+```
+
+#### Get Random Quote
+```powershell
+# PowerShell
+Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/random" -Method GET
+
+# curl
+curl https://quotes-api-ruddy.vercel.app/quotes/random
+```
+
+#### Get Quote by ID
+```powershell
+# PowerShell
+Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/42" -Method GET
+
+# curl
+curl https://quotes-api-ruddy.vercel.app/quotes/42
+```
+
+---
+
+### Protected Endpoints (🔒 Auth Required)
+
+All POST, PUT, DELETE operations require `api-password` header.
+
+#### Add New Quote
+```powershell
+# PowerShell
+$headers = @{
+    "Content-Type" = "application/json"
+    "api-password" = "Maithil1"
+}
+$body = @{
+    text = "The only way to do great work is to love what you do."
+    author = "Steve Jobs"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes" `
+    -Method POST -Headers $headers -Body $body
+
+# curl
+curl -X POST https://quotes-api-ruddy.vercel.app/quotes \
   -H "Content-Type: application/json" \
-  -H "x-api-password: your_secret_password_123" \
-  -d '{"text": "New quote", "author": "Author Name"}'
+  -H "api-password: Maithil1" \
+  -d '{"text": "The only way to do great work is to love what you do.", "author": "Steve Jobs"}'
 ```
 
-## Local Development
-
-```bash
-npm install
-npm start
+**Response (201):**
+```json
+{
+  "success": true,
+  "message": "Quote added successfully",
+  "data": {
+    "id": 2001,
+    "text": "The only way to do great work is to love what you do.",
+    "author": "Steve Jobs"
+  }
+}
 ```
 
-The API will run on `http://localhost:3000`
+#### Update Quote
+```powershell
+# PowerShell
+$headers = @{
+    "Content-Type" = "application/json"
+    "api-password" = "Maithil1"
+}
+$body = @{
+    text = "Updated quote text"
+    author = "Updated Author"
+} | ConvertTo-Json
 
-## Environment Variables
+Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/1" `
+    -Method PUT -Headers $headers -Body $body
 
-Create a `.env` file based on `.env.example`:
-
-```bash
-API_PASSWORD=your_secret_password_123
+# curl
+curl -X PUT https://quotes-api-ruddy.vercel.app/quotes/1 \
+  -H "Content-Type: application/json" \
+  -H "api-password: Maithil1" \
+  -d '{"text": "Updated quote text", "author": "Updated Author"}'
 ```
 
-On Vercel, set this as an environment variable in your project settings.
+#### Delete Quote
+```powershell
+# PowerShell
+$headers = @{ "api-password" = "Maithil1" }
+Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/1" `
+    -Method DELETE -Headers $headers
+
+# curl
+curl -X DELETE https://quotes-api-ruddy.vercel.app/quotes/1 \
+  -H "api-password: Maithil1"
+```
+
+---
+
+## 🔐 Authentication & Security
+
+### Environment Variables
+
+**Never commit secrets to GitHub!** The password is stored in `.env` (already in `.gitignore`).
+
+1. Copy `.env.example` to `.env`:
+   ```powershell
+   cp .env.example .env
+   ```
+
+2. Update your password in `.env`:
+   ```bash
+   API_PASSWORD=your_strong_password_here
+   ```
+
+3. On Vercel, add environment variable:
+   - Go to Project Settings → Environment Variables
+   - Add `API_PASSWORD` with your secure password
+   - Redeploy for changes to take effect
+
+### Password Requirements
+- Sent via `api-password` header (NOT in URL or body)
+- Required for: POST, PUT, DELETE
+- Not required for: GET endpoints
+- Returns 401 if missing, 403 if incorrect
+
+---
+
+## 📊 Response Format
+
+### Success Response
+```json
+{
+  "success": true,
+  "message": "Quote added successfully",
+  "data": { "id": 1, "text": "...", "author": "..." }
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "error": "Authentication required. Please provide password in api-password header."
+}
+```
+
+### Status Codes
+- `200` - Success (GET, PUT, DELETE)
+- `201` - Created (POST)
+- `400` - Bad Request (missing fields)
+- `401` - Unauthorized (no password)
+- `403` - Forbidden (wrong password)
+- `404` - Not Found (quote doesn't exist)
+
+---
+
+## 🚢 Deployment
+
+### Deploy to Vercel
+
+1. **Install Vercel CLI:**
+   ```powershell
+   npm install -g vercel
+   ```
+
+2. **Deploy:**
+   ```powershell
+   vercel
+   ```
+
+3. **Set environment variable:**
+   ```powershell
+   vercel env add API_PASSWORD
+   ```
+   Enter your password when prompted.
+
+4. **Redeploy:**
+   ```powershell
+   vercel --prod
+   ```
+
+---
+
+## 📝 Data Storage
+
+⚠️ **Note:** Quotes are stored in-memory. New quotes (ID 2001+) reset when server restarts. The original 2000 quotes persist.
+
+For production persistence, consider:
+- SQLite database
+- PostgreSQL
+- MongoDB
+
+---
+
+## 🛠️ Tech Stack
+
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Hosting:** Vercel
+- **Data:** In-memory (2000 quotes)
+
+---
+
+## 📄 License
+
+MIT License - Feel free to use this API in your projects!
+
+---
+
+## 🤝 Contributing
+
+Pull requests welcome! Please open an issue first to discuss changes.
+
+---
+
+## 🔗 Links
+
+- **Live API:** https://quotes-api-ruddy.vercel.app
+- **GitHub:** https://github.com/Chronos778/Quotes_api
