@@ -73,7 +73,7 @@ All POST, PUT, DELETE operations require `api-password` header.
 # PowerShell
 $headers = @{
     "Content-Type" = "application/json"
-    "api-password" = "Maithil1"
+    "api-password" = "YOUR_API_PASSWORD"
 }
 $body = @{
     text = "The only way to do great work is to love what you do."
@@ -86,7 +86,7 @@ Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes" `
 # curl
 curl -X POST https://quotes-api-ruddy.vercel.app/quotes \
   -H "Content-Type: application/json" \
-  -H "api-password: Maithil1" \
+  -H "api-password: YOUR_API_PASSWORD" \
   -d '{"text": "The only way to do great work is to love what you do.", "author": "Steve Jobs"}'
 ```
 
@@ -108,7 +108,7 @@ curl -X POST https://quotes-api-ruddy.vercel.app/quotes \
 # PowerShell
 $headers = @{
     "Content-Type" = "application/json"
-    "api-password" = "Maithil1"
+    "api-password" = "YOUR_API_PASSWORD"
 }
 $body = @{
     text = "Updated quote text"
@@ -121,20 +121,20 @@ Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/1" `
 # curl
 curl -X PUT https://quotes-api-ruddy.vercel.app/quotes/1 \
   -H "Content-Type: application/json" \
-  -H "api-password: Maithil1" \
+  -H "api-password: YOUR_API_PASSWORD" \
   -d '{"text": "Updated quote text", "author": "Updated Author"}'
 ```
 
 #### Delete Quote
 ```powershell
 # PowerShell
-$headers = @{ "api-password" = "Maithil1" }
+$headers = @{ "api-password" = "YOUR_API_PASSWORD" }
 Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/1" `
     -Method DELETE -Headers $headers
 
 # curl
 curl -X DELETE https://quotes-api-ruddy.vercel.app/quotes/1 \
-  -H "api-password: Maithil1"
+  -H "api-password: YOUR_API_PASSWORD"
 ```
 
 ---

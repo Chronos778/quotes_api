@@ -6,7 +6,13 @@ const port = 3000;
 app.use(express.json());
 
 // Password for modifying quotes (POST, PUT, DELETE)
-const API_PASSWORD = process.env.API_PASSWORD || 'Maithil1';
+// IMPORTANT: Set API_PASSWORD environment variable in production
+const API_PASSWORD = process.env.API_PASSWORD;
+
+if (!API_PASSWORD) {
+  console.warn('⚠️  WARNING: API_PASSWORD environment variable not set!');
+  console.warn('⚠️  Protected endpoints will not work properly.');
+}
 
 // Authentication middleware
 const authenticate = (req, res, next) => {
