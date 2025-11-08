@@ -1,8 +1,18 @@
 # 📜 Quotes API
 
-A REST API serving 2000+ inspirational quotes from famous personalities. Built with Express.js and deployed on Vercel.
+A REST API serving 5000 inspirational and educational quotes from history's greatest minds. Built with Express.js and deployed on Vercel.
 
 **Live API:** https://quotes-api-ruddy.vercel.app
+
+## 📚 Quote Categories
+
+Our collection spans diverse areas of wisdom and knowledge:
+- **Philosophy & Wisdom** - Ancient and modern philosophical insights
+- **Leadership & Success** - Principles from business and military leaders
+- **Science & Innovation** - Wisdom from scientists and inventors
+- **Personal Growth** - Character development and self-mastery
+- **Resilience & Perseverance** - Overcoming adversity and challenges
+- **Education & Learning** - Knowledge acquisition and intellectual growth
 
 ---
 

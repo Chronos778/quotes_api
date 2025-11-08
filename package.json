@@ -1,7 +1,7 @@
 {
   "name": "quotes-api",
-  "version": "1.0.0",
-  "description": "API for managing inspirational quotes",
+  "version": "2.0.0",
+  "description": "REST API serving 5000 inspirational and educational quotes from history's greatest minds",
   "main": "quotes-api.js",
   "scripts": {
     "start": "node quotes-api.js",
