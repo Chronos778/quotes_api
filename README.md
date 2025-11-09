@@ -72,6 +72,43 @@ Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/42" -Method G
 curl https://quotes-api-ruddy.vercel.app/quotes/42
 ```
 
+#### Get Random Quote as SVG Image 🎨
+```powershell
+# PowerShell - Open in browser or save to file
+Start-Process "https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=ocean"
+
+# curl - Save SVG to file
+curl https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=gradient -o quote.svg
+```
+
+**Available Themes:**
+- `light` - Clean white background
+- `dark` - Dark elegant theme
+- `gradient` - Purple gradient background
+- `ocean` - Ocean blue theme
+- `sunset` - Warm sunset colors
+- `forest` - Forest green theme
+- `purple` - Purple and rose theme
+
+**Query Parameters:**
+- `theme` - Color theme (default: light)
+- `width` - Image width in pixels (default: 800)
+- `height` - Image height in pixels (default: 400)
+
+**Examples:**
+```
+https://quotes-api-ruddy.vercel.app/quotes/random/svg
+https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=dark
+https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=sunset&width=1200&height=600
+https://quotes-api-ruddy.vercel.app/quotes/1/svg?theme=ocean
+```
+
+#### Get Specific Quote as SVG
+```powershell
+# Get quote #100 as SVG with forest theme
+curl https://quotes-api-ruddy.vercel.app/quotes/100/svg?theme=forest -o quote100.svg
+```
+
 ---
 
 ### Protected Endpoints (🔒 Auth Required)
