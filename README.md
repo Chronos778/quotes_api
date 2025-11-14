@@ -1,18 +1,32 @@
 # 📜 Quotes API
 
-A REST API serving 5000 inspirational and educational quotes from history's greatest minds. Built with Express.js and deployed on Vercel.
+A REST API serving **5000 inspirational and educational quotes** from history's greatest minds. Built with Express.js and deployed on Vercel.
 
-**Live API:** https://quotes-api-ruddy.vercel.app
+**🌐 Live API:** [https://quotes-api-ruddy.vercel.app](https://quotes-api-ruddy.vercel.app)
+
+---
+
+## ✨ Features
+
+- 🎨 **SVG Quote Generation** - Beautiful quote images with 7 themes
+- 📚 **5000 Curated Quotes** - Philosophy, Science, Leadership, Education & more
+- 🔒 **Secure API** - Password-protected modifications
+- ⚡ **Fast & Serverless** - Deployed on Vercel
+- 🆓 **Free to Use** - Public endpoints, no API key required
+
+---
 
 ## 📚 Quote Categories
 
 Our collection spans diverse areas of wisdom and knowledge:
-- **Philosophy & Wisdom** - Ancient and modern philosophical insights
-- **Leadership & Success** - Principles from business and military leaders
-- **Science & Innovation** - Wisdom from scientists and inventors
-- **Personal Growth** - Character development and self-mastery
-- **Resilience & Perseverance** - Overcoming adversity and challenges
-- **Education & Learning** - Knowledge acquisition and intellectual growth
+
+- **Philosophy & Wisdom** (500 quotes) - Ancient and modern philosophical insights from Socrates, Plato, Aristotle, Confucius, Buddha, Marcus Aurelius
+- **Leadership & Success** (500 quotes) - Principles from Churchill, Lincoln, Steve Jobs, Bill Gates, Warren Buffett
+- **Science & Innovation** (500 quotes) - Wisdom from Einstein, Tesla, Sagan, Hawking, Feynman
+- **Personal Growth** (500 quotes) - Character development and self-mastery from Stoic philosophers
+- **Resilience & Perseverance** (500 quotes) - Overcoming adversity from Edison, Maya Angelou, MLK Jr.
+- **Education & Learning** (500 quotes) - Knowledge and intellectual growth from Malala, Maria Montessori
+- **Motivation & Inspiration** (2000 quotes) - Classic motivational quotes
 
 ---
 
@@ -43,9 +57,10 @@ Our collection spans diverse areas of wisdom and knowledge:
 
 ## 📖 API Endpoints
 
-### Public Endpoints (No Auth Required)
+### 🌍 Public Endpoints (No Auth Required)
 
 #### Get All Quotes
+
 ```powershell
 # PowerShell
 Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes" -Method GET
@@ -54,7 +69,19 @@ Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes" -Method GET
 curl https://quotes-api-ruddy.vercel.app/quotes
 ```
 
+**Response:**
+```json
+{
+  "success": true,
+  "count": 5000,
+  "data": [...]
+}
+```
+
+---
+
 #### Get Random Quote
+
 ```powershell
 # PowerShell
 Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/random" -Method GET
@@ -63,7 +90,22 @@ Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/random" -Meth
 curl https://quotes-api-ruddy.vercel.app/quotes/random
 ```
 
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 42,
+    "text": "The only true wisdom is in knowing you know nothing.",
+    "author": "Socrates"
+  }
+}
+```
+
+---
+
 #### Get Quote by ID
+
 ```powershell
 # PowerShell
 Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/42" -Method GET
@@ -72,41 +114,69 @@ Invoke-RestMethod -Uri "https://quotes-api-ruddy.vercel.app/quotes/42" -Method G
 curl https://quotes-api-ruddy.vercel.app/quotes/42
 ```
 
-#### Get Random Quote as SVG Image 🎨
+---
+
+### 🎨 SVG Quote Images
+
+Generate beautiful quote images as SVG! Perfect for social media, websites, or embedding in documentation.
+
+#### Get Random Quote as SVG
+
+```html
+<!-- Embed in HTML -->
+<img src="https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=ocean" alt="Random Quote">
+
+<!-- Markdown (GitHub README) -->
+![Quote](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=gradient)
+```
+
 ```powershell
-# PowerShell - Open in browser or save to file
+# PowerShell - Open in browser
 Start-Process "https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=ocean"
 
-# curl - Save SVG to file
+# curl - Save to file
 curl https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=gradient -o quote.svg
 ```
 
-**Available Themes:**
-- `light` - Clean white background
-- `dark` - Dark elegant theme
-- `gradient` - Purple gradient background
-- `ocean` - Ocean blue theme
-- `sunset` - Warm sunset colors
-- `forest` - Forest green theme
-- `purple` - Purple and rose theme
+---
 
-**Query Parameters:**
-- `theme` - Color theme (default: light)
-- `width` - Image width in pixels (default: 800)
-- `height` - Image height in pixels (default: 400)
+#### Get Specific Quote as SVG
 
-**Examples:**
+```powershell
+# Get quote #100 as SVG with forest theme
+curl https://quotes-api-ruddy.vercel.app/quotes/100/svg?theme=forest -o quote100.svg
+```
+
+---
+
+#### 🎨 Available Themes
+
+| Theme | Description | Preview Link |
+|-------|-------------|--------------|
+| `light` | Clean white background | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=light) |
+| `dark` | Dark elegant theme | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=dark) |
+| `gradient` | Purple gradient background | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=gradient) |
+| `ocean` | Ocean blue theme | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=ocean) |
+| `sunset` | Warm sunset colors | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=sunset) |
+| `forest` | Forest green theme | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=forest) |
+| `purple` | Purple and rose theme | [Try it](https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=purple) |
+
+---
+
+#### ⚙️ SVG Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `theme` | string | `light` | Color theme (see table above) |
+| `width` | number | `800` | Image width in pixels |
+| `height` | number | `400` | Image height in pixels |
+
+**Example URLs:**
 ```
 https://quotes-api-ruddy.vercel.app/quotes/random/svg
 https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=dark
 https://quotes-api-ruddy.vercel.app/quotes/random/svg?theme=sunset&width=1200&height=600
-https://quotes-api-ruddy.vercel.app/quotes/1/svg?theme=ocean
-```
-
-#### Get Specific Quote as SVG
-```powershell
-# Get quote #100 as SVG with forest theme
-curl https://quotes-api-ruddy.vercel.app/quotes/100/svg?theme=forest -o quote100.svg
+https://quotes-api-ruddy.vercel.app/quotes/1/svg?theme=ocean&width=1000
 ```
 
 ---
@@ -273,9 +343,12 @@ curl -X DELETE https://quotes-api-ruddy.vercel.app/quotes/1 \
 
 ## 📝 Data Storage
 
-⚠️ **Note:** Quotes are stored in-memory. New quotes (ID 2001+) reset when server restarts. The original 2000 quotes persist.
+⚠️ **Note:** Quotes are stored in-memory. 
 
-For production persistence, consider:
+- **Original 5000 quotes** - Persist across restarts
+- **User-added quotes** (ID 5001+) - Reset when server restarts
+
+For production persistence of new quotes, consider:
 - SQLite database
 - PostgreSQL
 - MongoDB
@@ -284,10 +357,11 @@ For production persistence, consider:
 
 ## 🛠️ Tech Stack
 
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Hosting:** Vercel
-- **Data:** In-memory (2000 quotes)
+- **Runtime:** Node.js 14+
+- **Framework:** Express.js 5.1
+- **Hosting:** Vercel (Serverless)
+- **Environment:** dotenv 17.2
+- **Data:** 5000 in-memory quotes
 
 ---
 
