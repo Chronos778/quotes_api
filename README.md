@@ -1,6 +1,6 @@
 # 📜 Quotes API
 
-A REST API serving **5000 inspirational and educational quotes** from history's greatest minds. Built with Express.js and deployed on Vercel.
+A REST API serving **10,000 inspirational and educational quotes** from history's greatest minds. Built with Express.js and deployed on Vercel.
 
 **🌐 Live API:** [https://quotes-api-ruddy.vercel.app](https://quotes-api-ruddy.vercel.app)
 
@@ -9,7 +9,7 @@ A REST API serving **5000 inspirational and educational quotes** from history's 
 ## ✨ Features
 
 - 🎨 **SVG Quote Generation** - Beautiful quote images with 7 themes
-- 📚 **5000 Curated Quotes** - Philosophy, Science, Leadership, Education & more
+- 📚 **10,000 Curated Quotes** - Philosophy, Science, Leadership, Education & more
 - 🔒 **Secure API** - Password-protected modifications
 - ⚡ **Fast & Serverless** - Deployed on Vercel
 - 🆓 **Free to Use** - Public endpoints, no API key required
@@ -20,13 +20,13 @@ A REST API serving **5000 inspirational and educational quotes** from history's 
 
 Our collection spans diverse areas of wisdom and knowledge:
 
-- **Philosophy & Wisdom** (500 quotes) - Ancient and modern philosophical insights from Socrates, Plato, Aristotle, Confucius, Buddha, Marcus Aurelius
-- **Leadership & Success** (500 quotes) - Principles from Churchill, Lincoln, Steve Jobs, Bill Gates, Warren Buffett
-- **Science & Innovation** (500 quotes) - Wisdom from Einstein, Tesla, Sagan, Hawking, Feynman
-- **Personal Growth** (500 quotes) - Character development and self-mastery from Stoic philosophers
-- **Resilience & Perseverance** (500 quotes) - Overcoming adversity from Edison, Maya Angelou, MLK Jr.
-- **Education & Learning** (500 quotes) - Knowledge and intellectual growth from Malala, Maria Montessori
-- **Motivation & Inspiration** (2000 quotes) - Classic motivational quotes
+- **Philosophy & Wisdom** (1000 quotes) - Ancient and modern philosophical insights from Socrates, Plato, Aristotle, Confucius, Buddha, Marcus Aurelius
+- **Leadership & Success** (1000 quotes) - Principles from Churchill, Lincoln, Steve Jobs, Bill Gates, Warren Buffett
+- **Science & Innovation** (1000 quotes) - Wisdom from Einstein, Tesla, Sagan, Hawking, Feynman
+- **Personal Growth** (1000 quotes) - Character development and self-mastery from Stoic philosophers
+- **Resilience & Perseverance** (1000 quotes) - Overcoming adversity from Edison, Maya Angelou, MLK Jr.
+- **Education & Learning** (1000 quotes) - Knowledge and intellectual growth from Malala, Maria Montessori
+- **Motivation & Inspiration** (4000 quotes) - Classic motivational quotes
 
 ---
 
@@ -73,7 +73,7 @@ curl https://quotes-api-ruddy.vercel.app/quotes
 ```json
 {
   "success": true,
-  "count": 5000,
+  "count": 10000,
   "data": [...]
 }
 ```
@@ -213,7 +213,7 @@ curl -X POST https://quotes-api-ruddy.vercel.app/quotes \
   "success": true,
   "message": "Quote added successfully",
   "data": {
-    "id": 2001,
+    "id": 10001,
     "text": "The only way to do great work is to love what you do.",
     "author": "Steve Jobs"
   }
@@ -345,8 +345,8 @@ curl -X DELETE https://quotes-api-ruddy.vercel.app/quotes/1 \
 
 ⚠️ **Note:** Quotes are stored in-memory. 
 
-- **Original 5000 quotes** - Persist across restarts
-- **User-added quotes** (ID 5001+) - Reset when server restarts
+- **Original 10,000 quotes** - Persist across restarts
+- **User-added quotes** (ID 10001+) - Reset when server restarts
 
 For production persistence of new quotes, consider:
 - SQLite database
@@ -361,7 +361,7 @@ For production persistence of new quotes, consider:
 - **Framework:** Express.js 5.1
 - **Hosting:** Vercel (Serverless)
 - **Environment:** dotenv 17.2
-- **Data:** 5000 in-memory quotes
+- **Data:** 10,000 in-memory quotes
 
 ---
 
