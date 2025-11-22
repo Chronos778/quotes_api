@@ -361,7 +361,7 @@ For production persistence of new quotes, consider:
 - **Framework:** Express.js 5.1
 - **Hosting:** Vercel (Serverless)
 - **Environment:** dotenv 17.2
-- **Data:** 10,000 in-memory quotes
+- **Data:** 10,000 quotes (separated in `quotes-data.js`)
 
 ---
 
