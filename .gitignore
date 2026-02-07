@@ -6,3 +6,4 @@ node_modules/
 notes.txt
 *.db
 *.db-journal
+.github/
