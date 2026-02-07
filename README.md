@@ -89,7 +89,7 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 
 ## Project Structure
 
-```
+```text
 quotes-api/
 ├── src/
 │   ├── controllers/  # Business logic (Quotes CRUD)
