@@ -191,3 +191,65 @@ exports.getQuoteSvg = async (req, res) => {
         res.status(500).send('Error generating SVG');
     }
 };
+
+// Search quotes
+exports.searchQuotes = async (req, res) => {
+    const { q } = req.query;
+    if (!q) {
+        return res.status(400).json({
+            success: false,
+            error: 'Query parameter "q" is required'
+        });
+    }
+
+    try {
+        const searchTerm = `%${q}%`;
+        const result = await client.execute({
+            sql: 'SELECT * FROM quotes WHERE text LIKE ? OR author LIKE ? LIMIT 50',
+            args: [searchTerm, searchTerm]
+        });
+
+        res.json({
+            success: true,
+            count: result.rows.length,
+            data: result.rows
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// Get Quote of the Day
+exports.getQuoteOfTheDay = async (req, res) => {
+    try {
+        // Get total count
+        const countResult = await client.execute('SELECT COUNT(*) as count FROM quotes');
+        const count = countResult.rows[0].count || countResult.rows[0][0];
+
+        if (count === 0) {
+            return res.status(404).json({ success: false, error: 'No quotes available' });
+        }
+
+        // Calculate deterministic index based on date
+        const today = new Date();
+        const startOfYear = new Date(today.getFullYear(), 0, 0);
+        const diff = today - startOfYear;
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+
+        const index = dayOfYear % count;
+
+        const result = await client.execute({
+            sql: 'SELECT * FROM quotes LIMIT 1 OFFSET ?',
+            args: [index]
+        });
+
+        res.json({
+            success: true,
+            date: today.toISOString().split('T')[0],
+            data: result.rows[0]
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};

@@ -9,7 +9,10 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 ## Features
 
 - **SQLite Persistence** - All data is stored in a `quotes.db` file (no more data loss on restart!).
+- **Advanced Search** - Find quotes by text or author.
+- **Quote of the Day** - specific endpoint for a daily quote.
 - **SVG Quote Generation** - Beautiful quote images with 7 themes (light, dark, gradient, etc.).
+- **Rate Limiting** - Fair usage policy (100 requests / 15 min).
 - **10,000+ Curated Quotes** - Philosophy, Science, Leadership, Education & more.
 - **Secure API** - Password-protected modifications (POST, PUT, DELETE).
 - **MVC Architecture** - Clean Code structure with separate Routes, Controllers, and Utils.
@@ -57,6 +60,11 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 
 ## API Documentation
 
+### Rate Limiting
+
+- **Limit:** 100 requests per 15 minutes per IP.
+- **Headers:** `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`.
+
 ### Public Endpoints
 
 | Method | Endpoint | Description |
@@ -64,6 +72,8 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 | `GET` | `/quotes` | Get all quotes |
 | `GET` | `/quotes/:id` | Get a specific quote by ID |
 | `GET` | `/quotes/random` | Get a random quote |
+| `GET` | `/quotes/qod` | **NEW** Get the Quote of the Day |
+| `GET` | `/quotes/search?q=query` | **NEW** Search quotes by text or author |
 | `GET` | `/quotes/:id/svg` | Get quote as SVG image |
 | `GET` | `/quotes/random/svg` | Get random quote as SVG |
 

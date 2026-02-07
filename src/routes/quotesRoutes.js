@@ -6,6 +6,8 @@ const authenticate = require('../middleware/authMiddleware');
 // Public routes
 router.get('/', quotesController.getQuotes);
 router.get('/random', quotesController.getRandomQuote);
+router.get('/qod', quotesController.getQuoteOfTheDay);
+router.get('/search', quotesController.searchQuotes);
 router.get('/random/svg', quotesController.getRandomQuoteSvg);
 router.get('/:id', quotesController.getQuoteById);
 router.get('/:id/svg', quotesController.getQuoteSvg);

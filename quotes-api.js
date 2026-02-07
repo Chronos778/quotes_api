@@ -1,14 +1,33 @@
 ﻿require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const quotesRoutes = require('./src/routes/quotesRoutes');
 const { initializeDatabase, client } = require('./src/db/database');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Trust Vercel Proxy (Required for Rate Limiting)
+app.set('trust proxy', 1);
+
 app.use(cors());
 app.use(express.json());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: {
+    status: 429,
+    error: 'Too many requests, please try again later.'
+  }
+});
+
+// Apply rate limiting to all requests
+app.use(limiter);
 
 // Root route
 app.get('/', async (req, res) => {
@@ -22,6 +41,8 @@ app.get('/', async (req, res) => {
         "GET /quotes": "Get all quotes",
         "GET /quotes/:id": "Get a specific quote by ID",
         "GET /quotes/random": "Get a random quote",
+        "GET /quotes/qod": "Get the Quote of the Day",
+        "GET /quotes/search?q=query": "Search quotes by text or author",
         "GET /quotes/random/svg": "Get a random quote as SVG image",
         "GET /quotes/:id/svg": "Get a specific quote as SVG image",
         "POST /quotes": "Add a new quote (Protected - requires password)",
