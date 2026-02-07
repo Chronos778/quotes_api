@@ -1,22 +1,22 @@
-# 📜 Quotes API
+# Quotes API
 
 A robust REST API serving **10,000+ inspirational and educational quotes** from history's greatest minds. Now powered by **SQLite** for reliable data persistence.
 
-**🌐 Live API:** [https://quotes-api-ruddy.vercel.app](https://quotes-api-ruddy.vercel.app)
+**Live API:** [https://quotes-api-ruddy.vercel.app](https://quotes-api-ruddy.vercel.app)
 
 ---
 
-## ✨ Features
+## Features
 
-- 💾 **SQLite Persistence** - All data is stored in a `quotes.db` file (no more data loss on restart!).
-- 🎨 **SVG Quote Generation** - Beautiful quote images with 7 themes (light, dark, gradient, etc.).
-- 📚 **10,000+ Curated Quotes** - Philosophy, Science, Leadership, Education & more.
-- 🔒 **Secure API** - Password-protected modifications (POST, PUT, DELETE).
-- ⚡ **MVC Architecture** - Clean Code structure with separate Routes, Controllers, and Utils.
+- **SQLite Persistence** - All data is stored in a `quotes.db` file (no more data loss on restart!).
+- **SVG Quote Generation** - Beautiful quote images with 7 themes (light, dark, gradient, etc.).
+- **10,000+ Curated Quotes** - Philosophy, Science, Leadership, Education & more.
+- **Secure API** - Password-protected modifications (POST, PUT, DELETE).
+- **MVC Architecture** - Clean Code structure with separate Routes, Controllers, and Utils.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -55,7 +55,7 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 
 ---
 
-## 📖 API Documentation
+## API Documentation
 
 ### Public Endpoints
 
@@ -87,7 +87,7 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 
 ---
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```
 quotes-api/
@@ -101,7 +101,7 @@ quotes-api/
 └── ...
 ```
 
-## ⚠️ Deployment Note
+## Deployment Note
 
 This API is configured to use **Turso (LibSQL)** for cloud persistence.
 
@@ -115,6 +115,6 @@ This API is configured to use **Turso (LibSQL)** for cloud persistence.
 
 Without these variables, the API will try to use a local `quotes.db` file, which **will not persist data** on Vercel.
 
-## 📝 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
