@@ -21,6 +21,9 @@ async function initializeDatabase() {
       )
     `);
 
+    await client.execute('CREATE INDEX IF NOT EXISTS idx_quotes_author ON quotes(author)');
+    await client.execute('CREATE INDEX IF NOT EXISTS idx_quotes_text ON quotes(text)');
+
     // Seed database if empty
     const result = await client.execute('SELECT COUNT(*) as count FROM quotes');
     const count = result.rows[0].count || result.rows[0][0]; // Handle different result formats

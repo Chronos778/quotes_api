@@ -1,13 +1,79 @@
 const { client } = require('../db/database');
 const { generateSvg } = require('../utils/svgGenerator');
 
+const DEFAULT_QUOTES_LIMIT = 20;
+const DEFAULT_SEARCH_LIMIT = 20;
+const ALLOWED_SORT_FIELDS = new Set(['id', 'author', 'text']);
+const ALLOWED_ORDER = new Set(['asc', 'desc']);
+
+const parsePositiveInt = (value, fallback) => {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 // Get all quotes
 exports.getQuotes = async (req, res) => {
+    const maxQuotesLimit = parsePositiveInt(process.env.MAX_QUOTES_LIMIT, 100);
+    const page = parsePositiveInt(req.query.page, 1);
+    const requestedLimit = parsePositiveInt(req.query.limit, DEFAULT_QUOTES_LIMIT);
+    const limit = Math.min(requestedLimit, maxQuotesLimit);
+    const offset = (page - 1) * limit;
+
+    const author = typeof req.query.author === 'string' ? req.query.author.trim() : '';
+    const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+
+    const sortRaw = typeof req.query.sort === 'string' ? req.query.sort.toLowerCase() : 'id';
+    const sort = ALLOWED_SORT_FIELDS.has(sortRaw) ? sortRaw : 'id';
+
+    const orderRaw = typeof req.query.order === 'string' ? req.query.order.toLowerCase() : 'asc';
+    const order = ALLOWED_ORDER.has(orderRaw) ? orderRaw : 'asc';
+
+    const whereParts = [];
+    const whereArgs = [];
+
+    if (author) {
+        whereParts.push('author LIKE ?');
+        whereArgs.push(`%${author}%`);
+    }
+
+    if (q) {
+        whereParts.push('(text LIKE ? OR author LIKE ?)');
+        whereArgs.push(`%${q}%`, `%${q}%`);
+    }
+
+    const whereSql = whereParts.length > 0 ? `WHERE ${whereParts.join(' AND ')}` : '';
+
     try {
-        const result = await client.execute('SELECT * FROM quotes');
+        const countResult = await client.execute({
+            sql: `SELECT COUNT(*) as count FROM quotes ${whereSql}`,
+            args: whereArgs
+        });
+
+        const total = Number(countResult.rows[0].count || countResult.rows[0][0] || 0);
+        const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
+
+        const result = await client.execute({
+            sql: `SELECT * FROM quotes ${whereSql} ORDER BY ${sort} ${order.toUpperCase()} LIMIT ? OFFSET ?`,
+            args: [...whereArgs, limit, offset]
+        });
+
         res.json({
             success: true,
             count: result.rows.length,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages,
+                hasNext: totalPages > 0 && page < totalPages,
+                hasPrev: totalPages > 0 && page > 1
+            },
+            filters: {
+                author: author || null,
+                q: q || null,
+                sort,
+                order
+            },
             data: result.rows
         });
     } catch (error) {
@@ -195,6 +261,10 @@ exports.getQuoteSvg = async (req, res) => {
 // Search quotes
 exports.searchQuotes = async (req, res) => {
     const { q } = req.query;
+    const maxSearchLimit = parsePositiveInt(process.env.MAX_SEARCH_LIMIT, 50);
+    const requestedLimit = parsePositiveInt(req.query.limit, DEFAULT_SEARCH_LIMIT);
+    const limit = Math.min(requestedLimit, maxSearchLimit);
+
     if (!q) {
         return res.status(400).json({
             success: false,
@@ -205,12 +275,13 @@ exports.searchQuotes = async (req, res) => {
     try {
         const searchTerm = `%${q}%`;
         const result = await client.execute({
-            sql: 'SELECT * FROM quotes WHERE text LIKE ? OR author LIKE ? LIMIT 50',
-            args: [searchTerm, searchTerm]
+            sql: 'SELECT * FROM quotes WHERE text LIKE ? OR author LIKE ? LIMIT ?',
+            args: [searchTerm, searchTerm, limit]
         });
 
         res.json({
             success: true,
+            limit,
             count: result.rows.length,
             data: result.rows
         });

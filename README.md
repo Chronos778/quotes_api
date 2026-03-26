@@ -13,6 +13,8 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 - **Quote of the Day** - specific endpoint for a daily quote.
 - **SVG Quote Generation** - Beautiful quote images with 7 themes (light, dark, gradient, etc.).
 - **Rate Limiting** - Fair usage policy (100 requests / 15 min).
+- **Pagination & Filtering** - Scalable `GET /quotes` with page, limit, author, search, and sorting.
+- **Free Plan Protection** - Optional read-only mode + stricter write/SVG throttling.
 - **10,000+ Curated Quotes** - Philosophy, Science, Leadership, Education & more.
 - **Secure API** - Password-protected modifications (POST, PUT, DELETE).
 - **MVC Architecture** - Clean Code structure with separate Routes, Controllers, and Utils.
@@ -46,6 +48,12 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
     ```env
     PORT=3000
     API_PASSWORD=your_secure_password
+    # Optional free-plan controls
+    FREE_PLAN_MODE=true
+    READ_ONLY_MODE=false
+    RATE_LIMIT_MAX=100
+    MAX_QUOTES_LIMIT=100
+    MAX_SEARCH_LIMIT=50
     ```
 
 4. **Start the Server:**
@@ -64,18 +72,37 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 
 - **Limit:** 100 requests per 15 minutes per IP.
 - **Headers:** `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`.
+- **Free Plan Defaults:**
+    - Global: `100` requests / 15 min
+    - Writes (`POST`, `PUT`, `DELETE`): `20` requests / hour
+    - SVG endpoints: `30` requests / 15 min
 
 ### Public Endpoints
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/quotes` | Get all quotes |
+| `GET` | `/quotes` | Get quotes (paginated/filterable) |
 | `GET` | `/quotes/:id` | Get a specific quote by ID |
 | `GET` | `/quotes/random` | Get a random quote |
 | `GET` | `/quotes/qod` | **NEW** Get the Quote of the Day |
 | `GET` | `/quotes/search?q=query` | **NEW** Search quotes by text or author |
 | `GET` | `/quotes/:id/svg` | Get quote as SVG image |
 | `GET` | `/quotes/random/svg` | Get random quote as SVG |
+
+#### GET /quotes Query Parameters
+
+- `page` (default: `1`) - Page number.
+- `limit` (default: `20`, max from `MAX_QUOTES_LIMIT`) - Items per page.
+- `author` - Filter by author (partial match).
+- `q` - Search in quote text and author.
+- `sort` - One of `id`, `author`, `text`.
+- `order` - `asc` or `desc`.
+
+Example:
+
+```http
+GET /quotes?page=2&limit=20&author=einstein&sort=id&order=desc
+```
 
 ### Protected Endpoints
 
@@ -86,6 +113,8 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 | `POST` | `/quotes` | Add a new quote |
 | `PUT` | `/quotes/:id` | Update an existing quote |
 | `DELETE` | `/quotes/:id` | Delete a quote |
+
+If `READ_ONLY_MODE=true`, all protected endpoints return `403` and no write operation is allowed.
 
 **Header Example:**
 

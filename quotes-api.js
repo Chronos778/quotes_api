@@ -4,9 +4,14 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const quotesRoutes = require('./src/routes/quotesRoutes');
 const { initializeDatabase, client } = require('./src/db/database');
+const { isFreePlanMode, isReadOnlyMode } = require('./src/middleware/planProtectionMiddleware');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const parsePositiveInt = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
 
 // Trust Vercel Proxy (Required for Rate Limiting)
 app.set('trust proxy', 1);
@@ -15,9 +20,13 @@ app.use(cors());
 app.use(express.json());
 
 // Rate limiting
+const rateLimitWindowMs = parsePositiveInt(process.env.RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000);
+const defaultGlobalLimit = isFreePlanMode ? 100 : 200;
+const rateLimitMax = parsePositiveInt(process.env.RATE_LIMIT_MAX, defaultGlobalLimit);
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: rateLimitWindowMs,
+  limit: rateLimitMax,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: {
@@ -60,6 +69,10 @@ app.get('/', async (req, res) => {
       authentication: {
         note: "POST, PUT, and DELETE operations require authentication",
         method: "Header: api-password: your_password"
+      },
+      modes: {
+        freePlanMode: isFreePlanMode,
+        readOnlyMode: isReadOnlyMode
       },
       totalQuotes: count,
       persistence: "Turso/LibSQL"
