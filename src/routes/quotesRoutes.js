@@ -14,8 +14,8 @@ router.get('/:id', quotesController.getQuoteById);
 router.get('/:id/svg', svgLimiter, quotesController.getQuoteSvg);
 
 // Protected routes
-router.post('/', readOnlyGuard, writeLimiter, authenticate, quotesController.createQuote);
-router.put('/:id', readOnlyGuard, writeLimiter, authenticate, quotesController.updateQuote);
-router.delete('/:id', readOnlyGuard, writeLimiter, authenticate, quotesController.deleteQuote);
+router.post('/', readOnlyGuard, authenticate, writeLimiter, quotesController.createQuote);
+router.put('/:id', readOnlyGuard, authenticate, writeLimiter, quotesController.updateQuote);
+router.delete('/:id', readOnlyGuard, authenticate, writeLimiter, quotesController.deleteQuote);
 
 module.exports = router;

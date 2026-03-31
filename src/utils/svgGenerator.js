@@ -39,9 +39,18 @@ function escapeXml(text) {
     .replace(/'/g, '&apos;');
 }
 
+function parseBoundedInt(value, fallback, min, max) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(max, Math.max(min, parsed));
+}
+
 function generateSvg(quote, options = {}) {
-  const width = parseInt(options.width) || 800;
-  const height = parseInt(options.height) || 400;
+  const width = parseBoundedInt(options.width, 800, 200, 2000);
+  const height = parseBoundedInt(options.height, 400, 120, 1200);
   const theme = options.theme || 'light';
   
   const colors = themes[theme] || themes.light;

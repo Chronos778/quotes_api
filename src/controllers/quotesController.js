@@ -11,6 +11,45 @@ const parsePositiveInt = (value, fallback) => {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
 
+const MAX_QUOTE_TEXT_LENGTH = parsePositiveInt(process.env.MAX_QUOTE_TEXT_LENGTH, 500);
+const MAX_AUTHOR_LENGTH = parsePositiveInt(process.env.MAX_AUTHOR_LENGTH, 100);
+
+const sendInternalError = (res, error, context) => {
+    console.error(`[${context}]`, error);
+    return res.status(500).json({ success: false, error: 'Internal server error' });
+};
+
+const parseIdOrFail = (rawId) => {
+    const id = Number.parseInt(rawId, 10);
+    if (!Number.isInteger(id) || id <= 0) {
+        return null;
+    }
+
+    return id;
+};
+
+const normalizeQuotePayload = (payload) => {
+    const text = typeof payload?.text === 'string' ? payload.text.trim() : '';
+    const authorRaw = typeof payload?.author === 'string' ? payload.author.trim() : '';
+
+    if (!text) {
+        return { error: 'Text is required' };
+    }
+
+    if (text.length > MAX_QUOTE_TEXT_LENGTH) {
+        return { error: `Text cannot exceed ${MAX_QUOTE_TEXT_LENGTH} characters` };
+    }
+
+    if (authorRaw.length > MAX_AUTHOR_LENGTH) {
+        return { error: `Author cannot exceed ${MAX_AUTHOR_LENGTH} characters` };
+    }
+
+    return {
+        text,
+        author: authorRaw || 'Unknown'
+    };
+};
+
 // Get all quotes
 exports.getQuotes = async (req, res) => {
     const maxQuotesLimit = parsePositiveInt(process.env.MAX_QUOTES_LIMIT, 100);
@@ -77,7 +116,7 @@ exports.getQuotes = async (req, res) => {
             data: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'getQuotes');
     }
 };
 
@@ -90,16 +129,24 @@ exports.getRandomQuote = async (req, res) => {
             data: result.rows[0]
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'getRandomQuote');
     }
 };
 
 // Get a single quote by id
 exports.getQuoteById = async (req, res) => {
+    const id = parseIdOrFail(req.params.id);
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid quote id'
+        });
+    }
+
     try {
         const result = await client.execute({
             sql: 'SELECT * FROM quotes WHERE id = ?',
-            args: [req.params.id]
+            args: [id]
         });
 
         if (result.rows.length > 0) {
@@ -114,24 +161,26 @@ exports.getQuoteById = async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'getQuoteById');
     }
 };
 
 // Add a new quote
 exports.createQuote = async (req, res) => {
-    const { text, author } = req.body;
-    if (!text) {
+    const normalized = normalizeQuotePayload(req.body);
+    if (normalized.error) {
         return res.status(400).json({
             success: false,
-            error: 'Text is required'
+            error: normalized.error
         });
     }
+
+    const { text, author } = normalized;
 
     try {
         const result = await client.execute({
             sql: 'INSERT INTO quotes (text, author) VALUES (?, ?)',
-            args: [text, author || 'Unknown']
+            args: [text, author]
         });
 
         res.status(201).json({
@@ -140,25 +189,30 @@ exports.createQuote = async (req, res) => {
             data: {
                 id: Number(result.lastInsertRowid), // LibSQL returns bigint
                 text,
-                author: author || 'Unknown'
+                author
             }
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'createQuote');
     }
 };
 
 // Update a quote
 exports.updateQuote = async (req, res) => {
-    const { text, author } = req.body;
-    const id = req.params.id;
+    const id = parseIdOrFail(req.params.id);
+    if (!id) {
+        return res.status(400).json({ success: false, error: 'Invalid quote id' });
+    }
 
-    if (!text) {
+    const normalized = normalizeQuotePayload(req.body);
+    if (normalized.error) {
         return res.status(400).json({
             success: false,
-            error: 'Text is required'
+            error: normalized.error
         });
     }
+
+    const { text, author } = normalized;
 
     try {
         // Check if quote exists
@@ -171,27 +225,28 @@ exports.updateQuote = async (req, res) => {
             return res.status(404).json({ success: false, error: 'Quote not found' });
         }
 
-        const existingQuote = check.rows[0];
-        const newAuthor = author || existingQuote.author;
-
         await client.execute({
             sql: 'UPDATE quotes SET text = ?, author = ? WHERE id = ?',
-            args: [text, newAuthor, id]
+            args: [text, author, id]
         });
 
         res.json({
             success: true,
             message: 'Quote updated successfully',
-            data: { id: parseInt(id), text, author: newAuthor }
+            data: { id, text, author }
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'updateQuote');
     }
 };
 
 // Delete a quote
 exports.deleteQuote = async (req, res) => {
-    const id = req.params.id;
+    const id = parseIdOrFail(req.params.id);
+    if (!id) {
+        return res.status(400).json({ success: false, error: 'Invalid quote id' });
+    }
+
     try {
         const check = await client.execute({
             sql: 'SELECT * FROM quotes WHERE id = ?',
@@ -213,7 +268,7 @@ exports.deleteQuote = async (req, res) => {
             data: check.rows[0]
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'deleteQuote');
     }
 };
 
@@ -227,17 +282,22 @@ exports.getRandomQuoteSvg = async (req, res) => {
         res.setHeader('Cache-Control', 'no-cache');
         res.send(svg);
     } catch (error) {
-        console.error(error);
+        console.error('[getRandomQuoteSvg]', error);
         res.status(500).send('Error generating SVG');
     }
 };
 
 // Get specific quote as SVG
 exports.getQuoteSvg = async (req, res) => {
+    const id = parseIdOrFail(req.params.id);
+    if (!id) {
+        return res.status(400).json({ success: false, error: 'Invalid quote id' });
+    }
+
     try {
         const result = await client.execute({
             sql: 'SELECT * FROM quotes WHERE id = ?',
-            args: [req.params.id]
+            args: [id]
         });
 
         if (result.rows.length === 0) {
@@ -253,14 +313,14 @@ exports.getQuoteSvg = async (req, res) => {
         res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
         res.send(svg);
     } catch (error) {
-        console.error(error);
+        console.error('[getQuoteSvg]', error);
         res.status(500).send('Error generating SVG');
     }
 };
 
 // Search quotes
 exports.searchQuotes = async (req, res) => {
-    const { q } = req.query;
+    const q = typeof req.query.q === 'string' ? req.query.q.trim() : '';
     const maxSearchLimit = parsePositiveInt(process.env.MAX_SEARCH_LIMIT, 50);
     const requestedLimit = parsePositiveInt(req.query.limit, DEFAULT_SEARCH_LIMIT);
     const limit = Math.min(requestedLimit, maxSearchLimit);
@@ -286,7 +346,7 @@ exports.searchQuotes = async (req, res) => {
             data: result.rows
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'searchQuotes');
     }
 };
 
@@ -321,6 +381,6 @@ exports.getQuoteOfTheDay = async (req, res) => {
             data: result.rows[0]
         });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return sendInternalError(res, error, 'getQuoteOfTheDay');
     }
 };

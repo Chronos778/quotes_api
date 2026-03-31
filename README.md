@@ -54,6 +54,11 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
     RATE_LIMIT_MAX=100
     MAX_QUOTES_LIMIT=100
     MAX_SEARCH_LIMIT=50
+    # Optional security/input controls
+    CORS_ORIGINS=https://your-frontend.vercel.app,https://www.yourdomain.com
+    TRUST_PROXY=1
+    MAX_QUOTE_TEXT_LENGTH=500
+    MAX_AUTHOR_LENGTH=100
     ```
 
 4. **Start the Server:**
@@ -72,10 +77,7 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 
 - **Limit:** 100 requests per 15 minutes per IP.
 - **Headers:** `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`.
-- **Free Plan Defaults:**
-    - Global: `100` requests / 15 min
-    - Writes (`POST`, `PUT`, `DELETE`): `20` requests / hour
-    - SVG endpoints: `30` requests / 15 min
+- **Free Plan Defaults:** Global `100` requests / 15 min, Writes (`POST`, `PUT`, `DELETE`) `20` requests / hour, SVG endpoints `30` requests / 15 min.
 
 ### Public Endpoints
 
@@ -88,6 +90,7 @@ A robust REST API serving **10,000+ inspirational and educational quotes** from 
 | `GET` | `/quotes/search?q=query` | **NEW** Search quotes by text or author |
 | `GET` | `/quotes/:id/svg` | Get quote as SVG image |
 | `GET` | `/quotes/random/svg` | Get random quote as SVG |
+| `GET` | `/health` | Liveness health check |
 
 #### GET /quotes Query Parameters
 

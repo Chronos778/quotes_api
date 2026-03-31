@@ -12,12 +12,54 @@ const parsePositiveInt = (value, fallback) => {
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
+const parseTrustProxy = (value) => {
+  if (value === undefined || value === null || value === '') {
+    return 1;
+  }
 
-// Trust Vercel Proxy (Required for Rate Limiting)
-app.set('trust proxy', 1);
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === 'true') {
+    return true;
+  }
 
-app.use(cors());
+  if (normalized === 'false') {
+    return false;
+  }
+
+  const hopCount = Number.parseInt(normalized, 10);
+  if (Number.isFinite(hopCount) && hopCount >= 0) {
+    return hopCount;
+  }
+
+  return 1;
+};
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = allowedOrigins.length === 0
+  ? undefined
+  : {
+      origin(origin, callback) {
+        // Allow non-browser clients and configured browser origins.
+        if (!origin || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error('Not allowed by CORS'));
+      }
+    };
+
+// Trust proxy is configurable for non-Vercel deployments.
+app.set('trust proxy', parseTrustProxy(process.env.TRUST_PROXY));
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 // Rate limiting
 const rateLimitWindowMs = parsePositiveInt(process.env.RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000);
