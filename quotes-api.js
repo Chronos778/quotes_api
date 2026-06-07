@@ -1,8 +1,9 @@
-﻿require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const quotesRoutes = require('./src/routes/quotesRoutes');
+const pushRoutes = require('./src/routes/pushRoutes');
 const { initializeDatabase, client } = require('./src/db/database');
 const { isFreePlanMode, isReadOnlyMode } = require('./src/middleware/planProtectionMiddleware');
 
@@ -98,7 +99,11 @@ app.get('/', async (req, res) => {
         "GET /quotes/:id/svg": "Get a specific quote as SVG image",
         "POST /quotes": "Add a new quote (Protected - requires password)",
         "PUT /quotes/:id": "Update a quote by ID (Protected - requires password)",
-        "DELETE /quotes/:id": "Delete a quote by ID (Protected - requires password)"
+        "DELETE /quotes/:id": "Delete a quote by ID (Protected - requires password)",
+        "POST /push/subscribe": "Subscribe to push notifications",
+        "POST /push/unsubscribe": "Unsubscribe from push notifications",
+        "GET /push/vapid-public-key": "Get the VAPID public key",
+        "GET /push/send-daily": "Send daily quote push notification (cron)"
       },
       svgOptions: {
         themes: ["light", "dark", "gradient", "ocean", "sunset", "forest", "purple"],
@@ -126,6 +131,7 @@ app.get('/', async (req, res) => {
 
 // Mount quotes routes
 app.use('/quotes', quotesRoutes);
+app.use('/push', pushRoutes);
 
 // Start server
 async function startServer() {

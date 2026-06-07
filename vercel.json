@@ -11,5 +11,11 @@
       "src": "/(.*)",
       "dest": "/quotes-api.js"
     }
+  ],
+  "crons": [
+    {
+      "path": "/push/send-daily",
+      "schedule": "30 2 * * *"
+    }
   ]
 }

@@ -24,6 +24,19 @@ async function initializeDatabase() {
     await client.execute('CREATE INDEX IF NOT EXISTS idx_quotes_author ON quotes(author)');
     await client.execute('CREATE INDEX IF NOT EXISTS idx_quotes_text ON quotes(text)');
 
+    // Push notification subscriptions table
+    await client.execute(`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        endpoint TEXT NOT NULL UNIQUE,
+        keys_p256dh TEXT NOT NULL,
+        keys_auth TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )
+    `);
+    await client.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_push_sub_endpoint ON push_subscriptions(endpoint)');
+
     // Seed database if empty
     const result = await client.execute('SELECT COUNT(*) as count FROM quotes');
     const count = result.rows[0].count || result.rows[0][0]; // Handle different result formats
