@@ -257,7 +257,7 @@ This API is deployed on **Vercel** with **Turso (LibSQL)** for cloud persistence
     - `VAPID_PRIVATE_KEY` — your VAPID private key
     - `VAPID_SUBJECT` — `mailto:your-email@example.com`
 
-Without Turso variables, the API falls back to a local `quotes.db` file (won't persist on Vercel).
+Without Turso variables, the API falls back to a local `quotes.db` file (New changes won't show on vercel).
 
 ---
 
