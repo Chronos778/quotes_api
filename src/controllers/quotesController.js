@@ -1,5 +1,6 @@
 const { client } = require('../db/database');
 const { generateSvg } = require('../utils/svgGenerator');
+const { getQuoteOffsetForDate } = require('../utils/quoteOfDay');
 
 const DEFAULT_QUOTES_LIMIT = 20;
 const DEFAULT_SEARCH_LIMIT = 20;
@@ -355,20 +356,14 @@ exports.getQuoteOfTheDay = async (req, res) => {
     try {
         // Get total count
         const countResult = await client.execute('SELECT COUNT(*) as count FROM quotes');
-        const count = countResult.rows[0].count || countResult.rows[0][0];
+        const count = Number(countResult.rows[0].count || countResult.rows[0][0] || 0);
 
         if (count === 0) {
             return res.status(404).json({ success: false, error: 'No quotes available' });
         }
 
-        // Calculate deterministic index based on date
         const today = new Date();
-        const startOfYear = new Date(today.getFullYear(), 0, 0);
-        const diff = today - startOfYear;
-        const oneDay = 1000 * 60 * 60 * 24;
-        const dayOfYear = Math.floor(diff / oneDay);
-
-        const index = dayOfYear % count;
+        const index = getQuoteOffsetForDate(count, today);
 
         const result = await client.execute({
             sql: 'SELECT * FROM quotes LIMIT 1 OFFSET ?',
