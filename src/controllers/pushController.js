@@ -1,5 +1,6 @@
 const webpush = require('web-push');
 const { client } = require('../db/database');
+const { getQuoteOffsetForDate } = require('../utils/quoteOfDay');
 
 // Configure web-push with VAPID keys (only if keys are set)
 const vapidConfigured =
@@ -131,11 +132,7 @@ exports.sendDaily = async (req, res) => {
     }
 
     const today = new Date();
-    const startOfYear = new Date(today.getFullYear(), 0, 0);
-    const diff = today - startOfYear;
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-    const index = dayOfYear % count;
+    const index = getQuoteOffsetForDate(count, today);
 
     const quoteResult = await client.execute({
       sql: 'SELECT * FROM quotes LIMIT 1 OFFSET ?',
